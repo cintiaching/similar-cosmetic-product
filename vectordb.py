@@ -1,5 +1,4 @@
 import chromadb
-import numpy as np
 from typing import List
 
 from chromadb.utils import embedding_functions
@@ -23,19 +22,21 @@ class SimilarProductVectorDB:
         )
         self.n_query_result = n_query_result
 
-    def add_document(self, documents: List[str], metadatas: List[dict], product_ids: List[str]):
-        self.collection.add(
-            documents=documents,
-            metadatas=metadatas,
-            ids=product_ids,
-        )
+    def add_documents(self, documents: List[str], metadatas: List[dict], product_ids: List[str]):
+        for _documents, _metadatas, _product_ids in zip(chunk(documents), chunk(metadatas), chunk(product_ids)):
+            self.collection.add(
+                documents=_documents,
+                metadatas=_metadatas,
+                ids=_product_ids,
+            )
 
-    def add_embedding(self, embeddings: List[list], metadatas: List[dict], product_ids: List[str]):
-        self.collection.add(
-            embeddings=embeddings,
-            metadatas=metadatas,
-            ids=product_ids,
-        )
+    def add_embeddings(self, embeddings: List[list], metadatas: List[dict], product_ids: List[str]):
+        for _embeddings, _metadatas, _product_ids in zip(chunk(embeddings), chunk(metadatas), chunk(product_ids)):
+            self.collection.add(
+                embeddings=_embeddings,
+                metadatas=_metadatas,
+                ids=_product_ids,
+            )
 
     def query_with_product_id(self, product_id):
         # get embedding of the product_id
@@ -62,3 +63,7 @@ class SimilarProductVectorDB:
             }  # default filters: same class and in stock
         )
         return results
+
+
+def chunk(lst, batch_size=100):
+    return [lst[i:i + batch_size] for i in range(0, len(lst), batch_size)]
