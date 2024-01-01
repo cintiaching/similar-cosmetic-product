@@ -3,8 +3,7 @@ from typing import List
 
 from chromadb.utils import embedding_functions
 
-# By default, Chroma uses the Sentence Transformers all-MiniLM-L6-v2 model to create embeddings.
-default_ef = embedding_functions.DefaultEmbeddingFunction()
+default_ef = embedding_functions.SentenceTransformerEmbeddingFunction(normalize_embeddings=True)
 
 
 # about embedding function: https://docs.trychroma.com/embeddings
